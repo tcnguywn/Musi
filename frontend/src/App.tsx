@@ -6,6 +6,8 @@ import { AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
 import MainLayout from "./layout/MainLayout.tsx";
 import ChatPage from "./pages/chat/ChatPage.tsx";
 import AlbumPage from "./pages/album/AlbumPage.tsx";
+import AdminPage from "./pages/admin/AdminPage.tsx";
+import { Toaster } from "react-hot-toast";
 
 function App() {
 
@@ -15,6 +17,7 @@ function App() {
         <Route path="/sso-callback"
           element={<AuthenticateWithRedirectCallback signUpForceRedirectUrl={"/auth-callback"} />} />
         <Route path="/auth-callback" element={<AuthCallbackPage />} />
+        <Route path="/admin" element={<AdminPage />} />
 
         <Route element={<MainLayout />}>
 
@@ -26,6 +29,7 @@ function App() {
 
         </Route>
       </Routes>
+      <Toaster />
     </>
   )
 }
