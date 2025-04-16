@@ -9,7 +9,7 @@ const AuthCallbackPage = () => {
     const { isLoaded, user } = useUser();
     const navigate = useNavigate();
     const syncAttempted = useRef(false);
-
+    
     useEffect(() => {
         const syncUser = async () => {
             if (!isLoaded || !user || syncAttempted.current) return;
