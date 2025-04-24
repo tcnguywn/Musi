@@ -7,6 +7,9 @@ interface PlayerStore {
 	isPlaying: boolean;
 	queue: Song[];
 	currentIndex: number;
+	isShuffling: boolean;
+	repeatMode: 'off' | 'one' | 'all';
+	
 
 	initializeQueue: (songs: Song[]) => void;
 	playAlbum: (songs: Song[], startIndex?: number) => void;
@@ -14,6 +17,8 @@ interface PlayerStore {
 	togglePlay: () => void;
 	playNext: () => void;
 	playPrevious: () => void;
+	toggleShuffle: () => void;
+	cycleRepeatMode: () => void;
 }
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
@@ -21,6 +26,9 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 	isPlaying: false,
 	queue: [],
 	currentIndex: -1,
+	isShuffling: false,
+	repeatMode: 'off',
+	
 
 	initializeQueue: (songs: Song[]) => {
 		set({
@@ -87,40 +95,109 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 		});
 	},
 
-	playNext: () => {
-		const { currentIndex, queue } = get();
-		const nextIndex = currentIndex + 1;
+	toggleShuffle: () => {
+		set((state) => ({ isShuffling: !state.isShuffling }));
+	},
+	
+	cycleRepeatMode: () => {
+		set((state) => {
+			const nextMode = state.repeatMode === 'off' ? 'one' : state.repeatMode === 'one' ? 'all' : 'off';
+			return { repeatMode: nextMode };
+		});
+	},
 
-		// if there is a next song to play, let's play it
+	playNext: () => {
+		const { currentIndex, queue, isShuffling, repeatMode, currentSong } = get();
+	
+		const socket = useChatStore.getState().socket;
+	
+		// repeatMode: one => phát lại bài hiện tại
+		if (repeatMode === "one" && currentSong) {
+			if (socket.auth) {
+				socket.emit("update_activity", {
+					userId: socket.auth.userId,
+					activity: `Playing ${currentSong.title} by ${currentSong.artist}`,
+				});
+			}
+			set({
+				currentSong,
+				isPlaying: true,
+			});
+			return;
+		}
+	
+		// Shuffle bật
+		if (isShuffling) {
+			const remaining = queue.filter((_, i) => i !== currentIndex);
+			if (remaining.length === 0) return;
+			const randomSong = remaining[Math.floor(Math.random() * remaining.length)];
+			const randomIndex = queue.findIndex((s) => s._id === randomSong._id);
+	
+			if (socket.auth) {
+				socket.emit("update_activity", {
+					userId: socket.auth.userId,
+					activity: `Playing ${randomSong.title} by ${randomSong.artist}`,
+				});
+			}
+	
+			set({
+				currentSong: randomSong,
+				currentIndex: randomIndex,
+				isPlaying: true,
+			});
+			return;
+		}
+	
+		// Phát bài tiếp theo nếu có
+		const nextIndex = currentIndex + 1;
+	
 		if (nextIndex < queue.length) {
 			const nextSong = queue[nextIndex];
-
-			const socket = useChatStore.getState().socket;
+	
 			if (socket.auth) {
 				socket.emit("update_activity", {
 					userId: socket.auth.userId,
 					activity: `Playing ${nextSong.title} by ${nextSong.artist}`,
 				});
 			}
-
+	
 			set({
 				currentSong: nextSong,
 				currentIndex: nextIndex,
 				isPlaying: true,
 			});
 		} else {
-			// no next song
-			set({ isPlaying: false });
-
-			const socket = useChatStore.getState().socket;
-			if (socket.auth) {
-				socket.emit("update_activity", {
-					userId: socket.auth.userId,
-					activity: `Idle`,
+			// Nếu hết bài, xử lý theo repeat mode
+			if (repeatMode === "all") {
+				const firstSong = queue[0];
+	
+				if (socket.auth) {
+					socket.emit("update_activity", {
+						userId: socket.auth.userId,
+						activity: `Playing ${firstSong.title} by ${firstSong.artist}`,
+					});
+				}
+	
+				set({
+					currentSong: firstSong,
+					currentIndex: 0,
+					isPlaying: true,
 				});
+			} else {
+				// repeatMode === 'off'
+				set({ isPlaying: false });
+	
+				if (socket.auth) {
+					socket.emit("update_activity", {
+						userId: socket.auth.userId,
+						activity: `Idle`,
+					});
+				}
 			}
 		}
 	},
+	
+	
 	playPrevious: () => {
 		const { currentIndex, queue } = get();
 		const prevIndex = currentIndex - 1;
