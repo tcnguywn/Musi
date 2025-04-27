@@ -107,4 +107,3 @@ export const deleteAlbum = async (req, res, next) => {
         next(error);
     }
 };
-
