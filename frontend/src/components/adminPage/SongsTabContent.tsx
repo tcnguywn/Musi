@@ -1,7 +1,7 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card.tsx";
 import { Music } from "lucide-react";
-import SongsTable from "./SongsTable";
-import { Button } from "@/components/ui/button";
+import SongsTable from "./SongsTable.tsx";
+import { Button } from "@/components/ui/button.tsx";
 // import AddSongDialog from "./AddSongDialog";
 
 const SongsTabContent = () => {

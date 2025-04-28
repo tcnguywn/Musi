@@ -1,11 +1,11 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useChatStore } from "@/stores/useChatStore";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx";
+import { ScrollArea } from "@/components/ui/scroll-area.tsx";
+import { useChatStore } from "@/stores/useChatStore.tsx";
 import { useUser } from "@clerk/clerk-react";
 import { HeadphonesIcon, Music, Users } from "lucide-react";
 import { useEffect } from "react";
 
-const FriendsActivity = () => {
+const RightSidebar = () => {
 	const { users, fetchUsers, onlineUsers, userActivities } = useChatStore();
 	const { user } = useUser();
 
@@ -77,7 +77,7 @@ const FriendsActivity = () => {
 		</div>
 	);
 };
-export default FriendsActivity;
+export default RightSidebar;
 
 const LoginPrompt = () => (
 	<div className='h-full flex flex-col items-center justify-center p-6 text-center space-y-4'>

@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
-import { usePlayerStore } from "@/stores/usePlayerStore";
+import { Button } from "@/components/ui/button.tsx";
+import { Slider } from "@/components/ui/slider.tsx";
+import { usePlayerStore } from "@/stores/usePlayerStore.tsx";
 import { Laptop2, ListMusic, Mic2, Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, Volume1 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -10,7 +10,7 @@ const formatTime = (seconds: number) => {
 	return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
-export const PlaybackControls = () => {
+export const PlayerControls = () => {
 	const {
 		currentSong,
 		isPlaying,

@@ -1,12 +1,12 @@
 
 import { Routes, Route } from "react-router-dom";
-import HomePage from "./pages/home/HomePage.tsx";
-import AuthCallbackPage from "./pages/auth-callback/AuthCallbackPage.tsx";
+import HomePage from "./pages/HomePage.tsx";
+import AuthCallbackPage from "./pages/AuthCallbackPage.tsx";
 import { AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
 import MainLayout from "./layout/MainLayout.tsx";
-import ChatPage from "./pages/chat/ChatPage.tsx";
-import AlbumPage from "./pages/album/AlbumPage.tsx";
-import AdminPage from "./pages/admin/AdminPage.tsx";
+import ChatPage from "./pages/ChatPage.tsx";
+import AlbumPage from "./pages/AlbumPage.tsx";
+import AdminPage from "./pages/AdminPage.tsx";
 import { Toaster } from "react-hot-toast";
 
 function App() {

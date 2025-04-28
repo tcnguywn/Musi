@@ -5,7 +5,7 @@ const Header = () => {
 	return (
 		<div className='flex items-center justify-between'>
 			<div className='flex items-center gap-3 mb-8'>
-				<Link to='/' className='rounded-lg'>
+				<Link to='/frontend/public' className='rounded-lg'>
 					<img src='/logo.png' className='size-10 text-black' />
 				</Link>
 				<div>

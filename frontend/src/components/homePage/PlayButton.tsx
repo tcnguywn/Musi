@@ -1,15 +1,15 @@
-import { Button } from "@/components/ui/button";
-import { usePlayerStore } from "@/stores/usePlayerStore";
+import { Button } from "@/components/ui/button.tsx";
+import { usePlayerStore } from "@/stores/usePlayerStore.tsx";
 import { Song } from "@/types";
 import { Pause, Play } from "lucide-react";
 
 const PlayButton = ({ song }: { song: Song }) => {
-	const { currentSong, isPlaying, setCurrentSong, togglePlay } = usePlayerStore();
+	const { currentSong, isPlaying, changeSong, togglePlay } = usePlayerStore();
 	const isCurrentSong = currentSong?._id === song._id;
 
 	const handlePlay = () => {
 		if (isCurrentSong) togglePlay();
-		else setCurrentSong(song);
+		else changeSong(song);
 	};
 
 	return (

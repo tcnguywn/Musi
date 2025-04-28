@@ -1,6 +1,6 @@
-import { useMusicStore } from "@/stores/useMusicStore";
+import { useMusicStore } from "@/stores/useMusicStore.tsx";
 import { Library, ListMusic, PlayCircle, Users2 } from "lucide-react";
-import StatsCard from "./StatsCard";
+import StatsCard from "./StatsCard.tsx";
 
 const DashboardStats = () => {
 	const { stats } = useMusicStore();
