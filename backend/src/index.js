@@ -28,7 +28,7 @@ app.use(cors(
 app.use(express.json());    //parse req.body
 app.use(clerkMiddleware()); //add auth to rq object
 app.use(fileUpload({
-    useTempFiles: true,
+    useTempFile: true,
     tempFileDir: path.join(__dirname, "temp"),
     createParentPath: true,
     limits: {

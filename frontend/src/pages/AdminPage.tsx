@@ -1,12 +1,12 @@
-import { useAuthStore } from "@/stores/useAuthStore";
-import Header from "./components/Header";
-import DashboardStats from "./components/DashboardStats";
-import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import { useAuthStore } from "@/stores/useAuthStore.tsx";
+import Header from "../components/adminPage/Header.tsx";
+import DashboardStats from "../components/adminPage/DashboardStats.tsx";
+import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs.tsx";
 import { TabsList } from "@radix-ui/react-tabs";
 import { Album, Music } from "lucide-react";
-import SongsTabContent from "./components/SongsTabContent";
-import AlbumsTabContent from "./components/AlbumsTabContent";
-import { useMusicStore } from "@/stores/useMusicStore";
+import SongsTabContent from "../components/adminPage/SongsTabContent.tsx";
+import AlbumsTabContent from "../components/adminPage/AlbumsTabContent.tsx";
+import { useMusicStore } from "@/stores/useMusicStore.tsx";
 import { useEffect } from "react";
 
 const AdminPage = () => {

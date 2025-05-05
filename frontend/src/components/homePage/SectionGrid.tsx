@@ -1,7 +1,7 @@
 import { Song } from "@/types";
-import SectionGridSkeleton from "./SectionGridSkeleton";
-import { Button } from "@/components/ui/button";
-import PlayButton from "./PlayButton";
+import SectionGridSkeleton from "./SectionGridSkeleton.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import PlayButton from "./PlayButton.tsx";
 
 type SectionGridProps = {
 	title: string;

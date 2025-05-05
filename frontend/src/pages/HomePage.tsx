@@ -1,10 +1,10 @@
-import Topbar from "@/components/Topbar";
-import { useMusicStore } from "@/stores/useMusicStore";
+import Topbar from "@/components/Topbar.tsx";
+import { useMusicStore } from "@/stores/useMusicStore.tsx";
 import { useEffect } from "react";
-import FeaturedSection from "./components/FeaturedSection";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { usePlayerStore } from "@/stores/usePlayerStore";
-import SectionGrid from "./components/SectionGrid";
+import FeaturedSection from "../components/homePage/FeaturedSection.tsx";
+import { ScrollArea } from "@/components/ui/scroll-area.tsx";
+import { usePlayerStore } from "@/stores/usePlayerStore.tsx";
+import SectionGrid from "../components/homePage/SectionGrid.tsx";
 
 const HomePage = () => {
 	const {
@@ -37,7 +37,7 @@ const HomePage = () => {
 			<Topbar />
 			<ScrollArea className='h-[calc(100vh-180px)]'>
 				<div className='p-4 sm:p-6'>
-					<h1 className='text-2xl sm:text-3xl font-bold mb-6'>Have a good day</h1>
+					<h1 className='text-2xl sm:text-3xl font-bold mb-6'>Good afternoon</h1>
 					<FeaturedSection />
 
 					<div className='space-y-8'>

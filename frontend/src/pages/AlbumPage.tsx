@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useMusicStore } from "@/stores/useMusicStore";
-import { usePlayerStore } from "@/stores/usePlayerStore";
+import { Button } from "@/components/ui/button.tsx";
+import { ScrollArea } from "@/components/ui/scroll-area.tsx";
+import { useMusicStore } from "@/stores/useMusicStore.tsx";
+import { usePlayerStore } from "@/stores/usePlayerStore.tsx";
 import { Pause, Play, Clock } from "lucide-react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -48,7 +48,7 @@ const AlbumPage = () => {
 				<div className='relative min-h-full'>
 					{/* bg gradient */}
 					<div
-						className='absolute inset-0 bg-gradient-to-b from-[#11173c8b]/80 via-zinc-900/80
+						className='absolute inset-0 bg-gradient-to-b from-[#5038a0]/80 via-zinc-900/80
 					 to-zinc-900 pointer-events-none'
 						aria-hidden='true'
 					/>
