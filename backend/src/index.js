@@ -3,6 +3,8 @@ import dotenv from "dotenv"
 
 import { connectDB } from "./lib/db.js";
 import { clerkMiddleware } from "@clerk/express";
+import { createServer } from "http";
+import { initSocket } from "./lib/socket.js";
 import fileUpload from "express-fileupload";
 import path from "path";
 import cors from "cors";
@@ -13,11 +15,13 @@ import adminRoutes from "./routes/admin.route.js";
 import songRoutes from "./routes/song.route.js";
 import albumRoutes from "./routes/album.route.js";
 import statRoutes from "./routes/stat.route.js";
+
 dotenv.config(); 
 
 const __dirname = path.resolve();
 const app = express();
 const PORT = process.env.PORT
+
 
 app.use(cors(
     {
@@ -28,13 +32,16 @@ app.use(cors(
 app.use(express.json());    //parse req.body
 app.use(clerkMiddleware()); //add auth to rq object
 app.use(fileUpload({
-    useTempFile: true,
+    useTempFiles: true,
     tempFileDir: path.join(__dirname, "temp"),
     createParentPath: true,
     limits: {
         fileSize: 10 *1024*1024,    //10MB max
     }
 }));
+
+const httpServer = createServer(app);
+initSocket(httpServer);
 
 app.use("/api/users", userRoutes); 
 app.use("/api/auth", authRoutes);
@@ -48,7 +55,7 @@ app.use((err, req, res, next) => {
     res.status(500).json({ message: process.env.NODE_ENV === "prodution" ? "Internal server erore" : err.message});
 });
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
     console.log("Server is running on port " + PORT);
     connectDB();
 })
