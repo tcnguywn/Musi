@@ -24,7 +24,8 @@ const __dirname = path.resolve();
 const app = express();
 const PORT = process.env.PORT
 const tmpDir = path.join(process.cwd(), "temp");
-cron.schedule("* * * * *", () => {
+
+cron.schedule("0 * * * *", () => {
     if (fs.existsSync(tmpDir)) {
         fs.readdir(tmpDir, (err, files) => {
             if (err) {
