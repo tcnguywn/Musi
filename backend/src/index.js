@@ -22,7 +22,7 @@ dotenv.config();
 
 const __dirname = path.resolve();
 const app = express();
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 3000;
 const tmpDir = path.join(process.cwd(), "temp");
 
 cron.schedule("0 * * * *", () => {
@@ -75,7 +75,7 @@ if (process.env.NODE_ENV === "production") {
 
 const httpServer = createServer(app);
 initSocket(httpServer);
-httpServer.listen(PORT, () => {
-    console.log("Server is running on port " + PORT);
+httpServer.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server is running on port ${PORT}`);
     connectDB();
-})
+});
