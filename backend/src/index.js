@@ -23,6 +23,10 @@ dotenv.config();
 const __dirname = path.resolve();
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const httpServer = createServer(app);
+initSocket(httpServer);
+
 const tmpDir = path.join(process.cwd(), "temp");
 
 cron.schedule("0 * * * *", () => {
@@ -39,16 +43,9 @@ cron.schedule("0 * * * *", () => {
     }
 });
 
-app.use("/api/users", userRoutes); 
-app.use("/api/auth", authRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/songs", songRoutes);
-app.use("/api/albums", albumRoutes);
-app.use("/api/stats", statRoutes);
 
-app.use((err, req, res, next) => {  //error handler
-    res.status(500).json({ message: process.env.NODE_ENV === "prodution" ? "Internal server erore" : err.message});
-});
+
+
 app.use(express.json());    //parse req.body
 app.use(clerkMiddleware()); //add auth to rq object
 app.use(fileUpload({
@@ -65,16 +62,22 @@ app.use(cors(
         credentials: true,
     }
 ));
-
+app.use("/api/users", userRoutes); 
+app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/songs", songRoutes);
+app.use("/api/albums", albumRoutes);
+app.use("/api/stats", statRoutes);
 if (process.env.NODE_ENV === "production") {
 	app.use(express.static(path.join(__dirname, "../frontend/dist")));
 	app.get("*", (req, res) => {
 		res.sendFile(path.resolve(__dirname, "../frontend", "dist", "index.html"));
 	});
 }
+app.use((err, req, res, next) => {  //error handler
+    res.status(500).json({ message: process.env.NODE_ENV === "prodution" ? "Internal server erore" : err.message});
+});
 
-const httpServer = createServer(app);
-initSocket(httpServer);
 httpServer.listen(PORT, "0.0.0.0", () => {
     console.log(`Server is running on port ${PORT}`);
     connectDB();
