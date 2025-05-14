@@ -10,8 +10,12 @@ const RightSidebar = () => {
 	const { user } = useUser();
 
 	useEffect(() => {
-		if (user) fetchUsers();
+		if (user) {
+			console.log('Fetching users...');
+			fetchUsers();
+		}
 	}, [fetchUsers, user]);
+	console.log("Danh sách users:", users); // <-- thêm dòng này
 
 	return (
 		<div className='h-full bg-zinc-900 rounded-lg flex flex-col'>
@@ -43,7 +47,7 @@ const RightSidebar = () => {
 										</Avatar>
 										<div
 											className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-zinc-900 
-												${onlineUsers.has(user.clerkId) ? "bg-green-500" : "bg-zinc-500"}
+												${onlineUsers.has(user.clerkId) ? "bg-green-300" : "bg-zinc-500"}
 												`}
 											aria-hidden='true'
 										/>
@@ -52,7 +56,7 @@ const RightSidebar = () => {
 									<div className='flex-1 min-w-0'>
 										<div className='flex items-center gap-2'>
 											<span className='font-medium text-sm text-white'>{user.fullName}</span>
-											{isPlaying && <Music className='size-3.5 text-emerald-400 shrink-0' />}
+											{isPlaying && <Music className='size-3.5 text-emerald-300 shrink-0' />}
 										</div>
 
 										{isPlaying ? (

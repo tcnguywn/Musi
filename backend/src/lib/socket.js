@@ -17,11 +17,9 @@ export const initSocket = (server) => {
             userSockets.set(userId, socket.id);
             userActivities.set(userId, "Idle");
 
-            // broadcast to all connected sockets that this user just logged in
+            // connected sockets know this user just logged in
             io.emit("user_connected", userId);
-
             socket.emit("users_online", Array.from(userSockets.keys()));
-
             io.emit("activities", Array.from(userActivities.entries()));
         });
 
@@ -34,19 +32,16 @@ export const initSocket = (server) => {
         socket.on("send_message", async (data) => {
             try {
                 const { senderId, receiverId, content } = data;
-
                 const message = await Message.create({
                     senderId,
                     receiverId,
                     content,
                 });
-
-                // send to receiver in realtime, if they're online
+                // send to online receiver realtime
                 const receiverSocketId = userSockets.get(receiverId);
                 if (receiverSocketId) {
                     io.to(receiverSocketId).emit("receive_message", message);
                 }
-
                 socket.emit("message_sent", message);
             } catch (error) {
                 console.error("Message error:", error);
