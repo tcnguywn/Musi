@@ -7,6 +7,7 @@ const songSchema = new mongoose.Schema(
         imageUrl: { type: String, required: true },
         audioUrl: { type: String, required: true },
         duration: { type: Number, required: true },
+        // genre:   { type: String, required: true },
         albumId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Album',

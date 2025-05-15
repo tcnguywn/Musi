@@ -12,7 +12,6 @@ const seedDatabase = async () => {
 		// // Clear existing data
 		// await Album.deleteMany({});
 		// await Song.deleteMany({});
-
 		// // First, create all songs
 		// const createdSongs = await Song.insertMany([
 		// 	{
@@ -128,7 +127,7 @@ const seedDatabase = async () => {
 		// 		duration: 17, // 0:17
 		// 	},
 		// ]);
-
+		//
 		// // Create albums with references to song IDs
 		// const albums = [
 		// 	{
@@ -160,18 +159,18 @@ const seedDatabase = async () => {
 		// 		songs: createdSongs.slice(11, 14).map((song) => song._id),
 		// 	},
 		// ];
-
+		//
 		// // Insert all albums
 		// const createdAlbums = await Album.insertMany(albums);
-
+		//
 		// // Update songs with their album references
 		// for (let i = 0; i < createdAlbums.length; i++) {
 		// 	const album = createdAlbums[i];
 		// 	const albumSongs = albums[i].songs;
-
+		//
 		// 	await Song.updateMany({ _id: { $in: albumSongs } }, { albumId: album._id });
 		// }
-
+		//
 		// console.log("Database seeded successfully!");
 	} catch (error) {
 		console.error("Error seeding database:", error);
