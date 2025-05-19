@@ -5,6 +5,7 @@ export interface Song {
 	albumId: string | null;
 	imageUrl: string;
 	audioUrl: string;
+	genre: string;
 	duration: number;
 	createdAt: string;
 	updatedAt: string;
@@ -34,6 +35,13 @@ export interface Message {
 	createdAt: string;
 	updatedAt: string;
 }
+//
+// export interface ListenHistory {
+// 	_id: string;
+// 	songId: string;
+// 	userId: string;
+// 	listenedAt: string;
+// }
 
 export interface User {
 	_id: string;

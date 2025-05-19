@@ -7,6 +7,7 @@ import { useChatStore } from "@/stores/useChatStore";
 const updateApiToken = (token: string | null) => {
     if (token) {
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        console.log(token);
     } else {
         delete axiosInstance.defaults.headers.common['Authorization'];
     }
@@ -14,6 +15,7 @@ const updateApiToken = (token: string | null) => {
 
 const AuthProvider = ({children}: {children: React.ReactNode}) => {
     const {getToken, userId} = useAuth();
+    console.log(userId);
     const [loading, setLoading] = useState(true);
     const { checkAdminStatus } = useAuthStore();
     const { initSocket, disconnectSocket } = useChatStore();

@@ -12,13 +12,15 @@ interface MusicStore {
 	featuredSongs: Song[];
 	madeForYouSongs: Song[];
 	trendingSongs: Song[];
+	recentPlays : Song[];
 	stats: Stats;
 
 	fetchAlbums: () => Promise<void>;
 	fetchAlbumById: (id: string) => Promise<void>;
 	fetchFeaturedSongs: () => Promise<void>;
-	fetchMadeForYouSongs: () => Promise<void>;
+	fetchMadeForYouSongs: (userId?: string) => Promise<void>;
 	fetchTrendingSongs: () => Promise<void>;
+	fetchRecentPlays: (userId: string) => Promise<void>;
 	fetchStats: () => Promise<void>;
 	fetchSongs: () => Promise<void>;
 	deleteSong: (id: string) => Promise<void>;
@@ -34,6 +36,7 @@ export const useMusicStore = create<MusicStore>((set) => ({
 	madeForYouSongs: [],
 	featuredSongs: [],
 	trendingSongs: [],
+	recentPlays : [],
 	stats: {
 		totalSongs: 0,
 		totalAlbums: 0,
@@ -137,13 +140,18 @@ export const useMusicStore = create<MusicStore>((set) => ({
 		}
 	},
 
-	fetchMadeForYouSongs: async () => {
+	fetchMadeForYouSongs: async (userId?: string) => {
 		set({ isLoading: true, error: null });
 		try {
-			const response = await axiosInstance.get("/songs/made-for-you");
+			const response = await axiosInstance.get("/songs/made-for-you", {
+				params: { userId },
+			});
 			set({ madeForYouSongs: response.data });
 		} catch (error: any) {
-			set({ error: error.response.data.message });
+			// Xử lý lỗi chi tiết hơn
+			const errorMessage =
+				error.response?.data?.message || error.message || "Lỗi khi lấy bài hát gợi ý";
+			set({ error: errorMessage });
 		} finally {
 			set({ isLoading: false });
 		}
@@ -153,9 +161,30 @@ export const useMusicStore = create<MusicStore>((set) => ({
 		set({ isLoading: true, error: null });
 		try {
 			const response = await axiosInstance.get("/songs/trending");
+
 			set({ trendingSongs: response.data });
 		} catch (error: any) {
-			set({ error: error.response.data.message });
+			const errorMessage =
+				error.response?.data?.message || error.message || "Lỗi khi lấy bài hát thịnh hành";
+			set({ error: errorMessage });
+		} finally {
+			set({ isLoading: false });
+		}
+	},
+	fetchRecentPlays: async (userId?: string) => {
+		if (!userId) {
+			set({ recentPlays: [], isLoading: false, error: null });
+			return;
+		}
+		set({ isLoading: true, error: null });
+		try {
+			const response = await axiosInstance.get('/users/histories');
+			const songs: Song[] = response.data;
+			set({ recentPlays: songs });
+		} catch (error: any) {
+			const errorMessage =
+				error.response?.data?.message || error.message || 'Lỗi khi lấy bài hát gần đây';
+			set({ error: errorMessage });
 		} finally {
 			set({ isLoading: false });
 		}

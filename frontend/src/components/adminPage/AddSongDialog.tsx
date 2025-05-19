@@ -21,6 +21,7 @@ interface NewSong {
 	artist: string;
 	album: string;
 	duration: string;
+	genre: string;
 }
 
 const AddSongDialog = () => {
@@ -33,6 +34,7 @@ const AddSongDialog = () => {
 		artist: "",
 		album: "",
 		duration: "0",
+		genre: "",
 	});
 
 	const [files, setFiles] = useState<{ audio: File | null; image: File | null }>({
@@ -62,6 +64,7 @@ const AddSongDialog = () => {
 
 			formData.append("audioFile", files.audio);
 			formData.append("imageFile", files.image);
+			formData.append("genre", newSong.genre);
 
 			await axiosInstance.post("/admin/songs", formData, {
 				headers: {
@@ -74,6 +77,7 @@ const AddSongDialog = () => {
 				artist: "",
 				album: "",
 				duration: "0",
+				genre:"",
 			});
 
 			setFiles({
@@ -199,6 +203,35 @@ const AddSongDialog = () => {
 								{albums.map((album) => (
 									<SelectItem key={album._id} value={album._id}>
 										{album.title}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+					<div className='space-y-2'>
+						<label className='text-sm font-medium'>Genre</label>
+						<Select
+							value={newSong.genre}
+							onValueChange={(value) => setNewSong({ ...newSong, genre: value })}
+						>
+							<SelectTrigger className='bg-zinc-800 border-zinc-700'>
+								<SelectValue placeholder='Select genre' />
+							</SelectTrigger>
+							<SelectContent className='bg-zinc-800 border-zinc-700'>
+								{[
+									"R&B",
+									"Pop",
+									"Rap",
+									"Dance & EDM",
+									"Jazz",
+									"Funk",
+									"Rock",
+									"K-pop",
+									"Japanese Music",
+									"Indie & Alternative",
+								].map((genre) => (
+									<SelectItem key={genre} value={genre}>
+										{genre}
 									</SelectItem>
 								))}
 							</SelectContent>
