@@ -10,7 +10,7 @@ import {useUser} from "@clerk/clerk-react";
 const HomePage = () => {
 	const {
 		fetchFeaturedSongs,
-		fetchMadeForYouSongs,
+		fetchForYouSongs,
 		fetchTrendingSongs,
 		fetchRecentPlays,
 		isLoading,
@@ -26,9 +26,9 @@ const HomePage = () => {
 	// Các API không phụ thuộc user.id
 	useEffect(() => {
 		fetchFeaturedSongs();
-		fetchMadeForYouSongs(user?.id); // truyền undefined nếu chưa có user, xử lý ở trong store
+		fetchForYouSongs(user?.id); // truyền undefined nếu chưa có user, xử lý ở trong store
 		fetchTrendingSongs();
-	}, [fetchFeaturedSongs, fetchMadeForYouSongs, fetchTrendingSongs, user?.id]);
+	}, [fetchFeaturedSongs, fetchForYouSongs, fetchTrendingSongs, user?.id]);
 
 	// Chỉ fetch recent plays nếu có user.id
 	useEffect(() => {
@@ -63,12 +63,13 @@ const HomePage = () => {
 					<FeaturedSection />
 
 					<div className='space-y-8'>
+						
+						<SectionGrid title='You May Listen' songs={madeForYouSongs} isLoading={isLoading} />
+						<SectionGrid title='On Trending' songs={trendingSongs} isLoading={isLoading} />
 						{/* Section hiển thị recentPlays nếu có */}
 						{recentPlays.length > 0 && (
 							<SectionGrid title='Recently Played' songs={recentPlays} isLoading={isLoading} />
 						)}
-						<SectionGrid title='You May Listen' songs={madeForYouSongs} isLoading={isLoading} />
-						<SectionGrid title='On Trending' songs={trendingSongs} isLoading={isLoading} />
 					</div>
 				</div>
 			</ScrollArea>

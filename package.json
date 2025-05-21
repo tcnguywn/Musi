@@ -2,7 +2,7 @@
   "dependencies": {
     "react": "^19.1.0"
   },
-  "name": "mu6",
+  "name": "musi",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -13,13 +13,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/VUHUQ25133/Mu6.git"
+    "url": "git+https://github.com/tcnguywn/Musi.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/VUHUQ25133/Mu6/issues"
+    "url": "https://github.com/tcnguywn/Musi/issues"
   },
-  "homepage": "https://github.com/VUHUQ25133/Mu6#readme"
+  "homepage": "https://github.com/tcnguywn/Musi#readme"
 }

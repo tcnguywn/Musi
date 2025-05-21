@@ -18,7 +18,7 @@ interface MusicStore {
 	fetchAlbums: () => Promise<void>;
 	fetchAlbumById: (id: string) => Promise<void>;
 	fetchFeaturedSongs: () => Promise<void>;
-	fetchMadeForYouSongs: (userId?: string) => Promise<void>;
+	fetchForYouSongs: (userId?: string) => Promise<void>;
 	fetchTrendingSongs: () => Promise<void>;
 	fetchRecentPlays: (userId: string) => Promise<void>;
 	fetchStats: () => Promise<void>;
@@ -140,7 +140,7 @@ export const useMusicStore = create<MusicStore>((set) => ({
 		}
 	},
 
-	fetchMadeForYouSongs: async (userId?: string) => {
+	fetchForYouSongs: async (userId?: string) => {
 		set({ isLoading: true, error: null });
 		try {
 			const response = await axiosInstance.get("/songs/made-for-you", {
