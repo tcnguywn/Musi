@@ -37,33 +37,72 @@ export const getFeaturedSongs = async (req, res, next) => {
 export const getForYouSongs = async (req, res, next) => {
     try {
         const userId = req.query.userId;
-
         let songs;
 
         if (userId) {
-            // 1. Lấy lịch sử nghe và populate thông tin bài hát
+            // 1. Lấy lịch sử nghe gần đây với trọng số thời gian
             const histories = await ListenHistory.find({ userId })
                 .sort({ listenedAt: -1 })
-                .limit(100)
-                .populate("songId", "genre");
+                .limit(200)
+                .populate("songId", "genre artist");
 
-            // 2. Đếm tần suất genre
-            const genreCount = {};
-            histories.forEach(({ songId }) => {
+            // 2. Tính điểm cho genre với trọng số thời gian
+            const genreScores = {};
+            const artistScores = {};
+            const now = new Date();
+
+            histories.forEach(({ songId, listenedAt }, index) => {
                 if (songId && songId.genre) {
-                    genreCount[songId.genre] = (genreCount[songId.genre] || 0) + 1;
+                    // Trọng số giảm dần theo thời gian và vị trí
+                    const timeWeight = Math.max(0.1, 1 - (now - listenedAt) / (30 * 24 * 60 * 60 * 1000)); // 30 ngày
+                    const positionWeight = Math.max(0.1, 1 - index / 100); // Vị trí trong top 100
+                    const weight = timeWeight * positionWeight;
+
+                    genreScores[songId.genre] = (genreScores[songId.genre] || 0) + weight;
+                    artistScores[songId.artist] = (artistScores[songId.artist] || 0) + weight;
                 }
             });
 
-            // 3. Lấy top genre
-            const sortedGenres = Object.entries(genreCount).sort((a, b) => b[1] - a[1]);
-            const topGenre = sortedGenres[0]?.[0];
+            // 3. Lấy top genres và artists
+            const topGenres = Object.entries(genreScores)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 3)
+                .map(([genre]) => genre);
 
-            // 4. Gợi ý bài hát theo genre hoặc random fallback
-            if (topGenre) {
-                songs = await Song.aggregate([
-                    { $match: { genre: topGenre } },
-                    { $sample: { size: 4 } },
+            const topArtists = Object.entries(artistScores)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([artist]) => artist);
+
+            // 4. Lấy danh sách bài hát đã nghe để loại trừ
+            const listenedSongIds = histories.map(h => h.songId._id);
+
+            // 5. Gợi ý bài hát thông minh hơn
+            if (topGenres.length > 0) {
+                const pipeline = [
+                    {
+                        $match: {
+                            _id: { $nin: listenedSongIds }, // Loại trừ bài đã nghe
+                            $or: [
+                                { genre: { $in: topGenres } },
+                                { artist: { $in: topArtists } }
+                            ]
+                        }
+                    },
+                    {
+                        $addFields: {
+                            // Tính điểm ưu tiên
+                            score: {
+                                $add: [
+                                    { $cond: [{ $in: ["$genre", topGenres] }, 2, 0] },
+                                    { $cond: [{ $in: ["$artist", topArtists] }, 1, 0] }
+                                ]
+                            }
+                        }
+                    },
+                    { $sort: { score: -1 } },
+                    { $sample: { size: 20 } }, // Lấy 20 bài có điểm cao
+                    { $sample: { size: 8 } },  // Random 8 bài để tăng đa dạng
                     {
                         $project: {
                             _id: 1,
@@ -71,13 +110,36 @@ export const getForYouSongs = async (req, res, next) => {
                             artist: 1,
                             imageUrl: 1,
                             audioUrl: 1,
-                        },
-                    },
-                ]);
+                            genre: 1,
+                            score: 1
+                        }
+                    }
+                ];
+
+                songs = await Song.aggregate(pipeline);
+
+                // Nếu không đủ bài, bổ sung thêm
+                if (songs.length < 8) {
+                    const additionalSongs = await Song.aggregate([
+                        { $match: { _id: { $nin: [...listenedSongIds, ...songs.map(s => s._id)] } } },
+                        { $sample: { size: 8 - songs.length } },
+                        {
+                            $project: {
+                                _id: 1,
+                                title: 1,
+                                artist: 1,
+                                imageUrl: 1,
+                                audioUrl: 1,
+                                genre: 1
+                            }
+                        }
+                    ]);
+                    songs = [...songs, ...additionalSongs];
+                }
             } else {
-                // fallback
+                // Fallback cho user mới
                 songs = await Song.aggregate([
-                    { $sample: { size: 4 } },
+                    { $sample: { size: 8 } },
                     {
                         $project: {
                             _id: 1,
@@ -85,14 +147,40 @@ export const getForYouSongs = async (req, res, next) => {
                             artist: 1,
                             imageUrl: 1,
                             audioUrl: 1,
-                        },
-                    },
+                            genre: 1
+                        }
+                    }
                 ]);
             }
         } else {
-            // người dùng chưa đăng nhập -> random
+            // User chưa đăng nhập - recommend trending hoặc popular
             songs = await Song.aggregate([
-                { $sample: { size: 4 } },
+                {
+                    $lookup: {
+                        from: "listenhistories",
+                        localField: "_id",
+                        foreignField: "songId",
+                        as: "listens"
+                    }
+                },
+                {
+                    $addFields: {
+                        listenCount: { $size: "$listens" },
+                        recentListens: {
+                            $size: {
+                                $filter: {
+                                    input: "$listens",
+                                    cond: {
+                                        $gte: ["$$this.listenedAt", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                { $sort: { recentListens: -1, listenCount: -1 } },
+                { $limit: 20 },
+                { $sample: { size: 8 } },
                 {
                     $project: {
                         _id: 1,
@@ -100,8 +188,9 @@ export const getForYouSongs = async (req, res, next) => {
                         artist: 1,
                         imageUrl: 1,
                         audioUrl: 1,
-                    },
-                },
+                        genre: 1
+                    }
+                }
             ]);
         }
 
